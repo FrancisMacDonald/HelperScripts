@@ -1,0 +1,41 @@
+hide_all_windows()
+activate_window("Google Chrome", "Google Chrome", {1920, 1080}, {1000, 100})
+activate_window("Visual Studio Code", "Code", {1920, 1080}, {1000, 200})
+activate_window("Microsoft Teams", "Microsoft Teams", {900, 571}, {0, 807})
+#activate_window("OBS", "OBS", {900, 781}, {0, 0})
+
+on activate_window(application_name, window_name, window_size, window_position)
+	log ("Loading and positioning" & application_name)
+	tell application "System Events" to set app_running to exists (processes where name is window_name)
+	
+	tell application application_name
+		activate
+		if not app_running then
+			# Give it time to load
+			delay 10
+		end if
+	end tell
+	
+	tell application "System Events" to tell process window_name
+		repeat with i in {5, 4, 3, 2, 1}
+			if exists window i then
+				tell window i
+					set position to window_position
+					set size to window_size
+				end tell
+			end if
+		end repeat
+	end tell
+end activate_window
+
+on hide_all_windows()
+	tell application "System Events" to keystroke "h" using {command down, option down}
+end hide_all_windows
+
+on hide_desktop_icons()
+	do shell script "defaults write com.apple.finder CreateDesktop -bool FALSE;killall Finder"
+end hide_desktop_icons
+
+on show_desktop_icons()
+	do shell script "defaults delete com.apple.finder CreateDesktop;killall Finder"
+end show_desktop_icons
